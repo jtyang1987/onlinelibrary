@@ -69,7 +69,92 @@ app.delete('/json_file', (req, res) => {
     }
 });
 
+// Get book details
+app.get('/book', (req, res) => {
+    try {
+        let books = JSON.parse(fs.readFileSync(booksJsonFile));
+        const titleName = req.query.title;
+        let responseBook = {};
+        books.forEach ((book, index) => {
+            if (book['title'] == titleName) {
+                responseBook = book
+            }
+        })
+        if (Object.keys(responseBook).length === 0) {
+            res.send({'error': `${req.query.title} is not found.`})
+        } else {
+            res.json(responseBook);
+        }
+    } catch (err) {
+        res.send({'error': err.toString()});
+    }
+});
 
+// Add new book
+app.put('/book', (req, res) => {
+    try {
+        let bookInfo = req.body;
+        fs.open(booksJsonFile, 'r', (err,fd) => {
+            let fileContent = JSON.parse(fs.readFileSync(booksJsonFile, 'utf8'));
+            fileContent.push(bookInfo);
+            fs.writeFileSync(booksJsonFile, JSON.stringify(fileContent));
+        });
+        res.send({'success': 'Add book successfully.'})
+    } catch (err) {
+        res.send({'error': err.toSting()})
+    }
+});
+
+// Update book detail
+app.post('/book', (req,res) => {
+    try {
+        let bookTitle = req.query.title;
+        let bodyData = req.body;
+        let found = false;
+        fs.open(booksJsonFile, 'r', (err, fd) => {
+            var books = JSON.parse(fs.readFileSync(booksJsonFile, 'utf8'));
+            books.forEach((book, index) => {
+                if (book['title']==bookTitle) {
+                    found = true;
+                    book['title'] = bodyData['title'];
+                    book['web_url'] = bodyData['web_url'];
+                    book['image_url'] = bodyData['image_url'];
+                }
+            })
+            if (found) {
+                fs.writeFileSync(booksJsonFile, JSON.stringify(books));
+                res.send({'success': `${bookTitle} is successfully updated.`})
+            } else {
+                res.send({'error': `${bookTitle} is not found.`})
+            }
+        })
+    } catch (err) {
+        res.send({'error': err.toString()})
+    }
+});
+
+// Delete book
+app.delete('/book', (req, res) => {
+    try {
+        let bookTitle = req.query.title;
+        let books = JSON.parse(fs.readFileSync(booksJsonFile, 'utf8'));
+        var bookIndex = -1;
+        books.forEach((book, index) => {
+            if (book['title']==bookTitle) {
+                bookIndex = index;
+            }
+        })
+        if (bookIndex>-1) {
+            books.splice(bookIndex, 1);
+            fs.writeFileSync(booksJsonFile, JSON.stringify(books));
+            res.send({'success': `${bookTitle} is successfully deleted.`})
+        } else {
+            res.send({'error': `${bookTitle} is not found.`})
+        }
+    } catch (err) {
+        res.send({'error': err.toString()})
+    }
+});
 
 const port = 8080
 app.listen(port, () => {
