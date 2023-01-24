@@ -157,6 +157,17 @@ app.delete('/book', (req, res) => {
 });
 
 const port = 8080
+
+// static Files (https://www.youtube.com/watch?v=A01KtJTv1oc)
+app.use(express.static(__dirname + '/frontend'))
+app.use('/css', express.static(__dirname + '/frontend/css'))
+app.use('/js', express.static(__dirname + '/frontend/js'))
+//app.use('/img', express.static(__dirname + '/frontend/img'))
+
+app.get('', (req, res) => {
+    res.sendFile(__dirname + '/frontend/home.html')
+})
+
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`)
 })
