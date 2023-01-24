@@ -1,0 +1,78 @@
+#header {
+    text-align: center;
+}
+
+div.booksGallery {
+    width: 100%;
+    /* border: 1px solid green; */
+}
+
+input {
+    margin-top: 10px;
+}
+
+div.gallery {
+    width: 25%;
+    height: 25%;
+    margin: 5px;
+    border: 1px solid #fff;
+    float: left;
+    margin: 0 auto;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+div.gallery:hover {
+    border: 1px solid #6c757d;
+}
+
+div.gallery img {
+    width: 100%;
+    height: auto;
+}
+
+div.galleryTitle {
+    padding: 15px;
+    text-align: center;
+}
+
+dic.galleryTitle:hover {
+    cursor: pointer;
+}
+
+#main-content {
+    position: relative;
+    margin-top: 25px;
+    width: 70%;
+    left: 15%;
+    right: 15%;
+    text-align: center;
+    /* border: 1px solid green; */
+}
+
+#bookImage {
+    height: 150px;
+    width: 100px;
+}
+
+/* Web Crawler CSS */
+tbody {
+    text-align: left;
+    width: 20%;
+}
+
+.bookTitle {
+    font-size: medium;
+    color: green;
+    font-weight: bold;
+}
+
+.bookWebURL {
+    font-size: small;
+    color: grey;
+}
+
+.bookImageURL {
+    font-size: small;
+    color: grey;
+}

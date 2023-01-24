@@ -44,8 +44,60 @@ function displayBookDetail(bookTitle, xhttp) {
     newContent += `<div><label>Title:</label><input id="titleInput" type="text" value='${bookTitle.replaceAll('%20', ' ')}' size='50'></input></div>`;
     newContent += `<div><label>Web URL:</label><input id="webUrlInput" type="text" value='${webUrl}' size='50'></input></div>`;
     newContent += `<div><label>Image URL:</label><input id="imageUrlInput" type="text" value='${imageUrl}' size='50'></input></div>`;
-    newContent += `<div><button class="btn btn-success" onClick=updateBook(${bookTitle}) style="float:middle; margin-right: 50px;">Update</button>` +
-                  `<button class="btn btn-danger" onClick=deleteBook(${bookTitle}) style="float:middle">Delete</button></div></div>`;
+    newContent += `<div><button class="btn btn-success" onClick=updateBook('${bookTitle}') style="float:middle; margin-right: 50px;">Update</button>` +
+                  `<button class="btn btn-danger" onClick=deleteBook('${bookTitle}') style="float:middle">Delete</button></div></div>`;
     document.getElementById("main-content").innerHTML = newContent;
 }
 
+function updateBook(originalTitle) {
+    var newTitle = document.getElementById('titleInput').value;
+    var newWebUrl = document.getElementById('webUrlInput').value;
+    var newImageUrl = document.getElementById('imageUrlInput').value;
+    var newJSON = {'title': newTitle, 'web_url': newWebUrl, 'image_url': newImageUrl};
+    updateBookInJSON(originalTitle, newJSON);
+}
+
+function updateBookInJSON(originalTitle, newJSON) {
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", `http://localhost:8080/book?title=${originalTitle}`, true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify(newJSON));
+    document.getElementById("main-content").innerHTML = `<h1>Book Updated!</h1>`;
+}
+
+function deleteBook(bookTitle) {
+    if (confirm(`DO you want to delete the book "${bookTitle}"?`)) {
+        deleteBookInJSON(bookTitle);
+    }
+}
+
+function deleteBookInJSON(bookTitle) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("DELETE", `http://localhost:8080/book?title=${bookTitle}`, true);
+    xhttp.send();
+    document.getElementById("main-content").innerHTML = `<h1>"${bookTitle}" Deleted!</h1>`;
+}
+
+function addNewBook() {
+    var newContent = `<div><label>Title:</label><input id='titleInput' type='text' value='bookTitle' size='50'></input></div>`;
+    newContent += `<div><label>Web URL:</label><input id='webUrlInput' type='text' value='webUrl' size='50'></input></div>`;
+    newContent += `<div><label>Image URL:</label><input id='imageUrlInput' type='text' value='imageUrl' size='50'></input></div>`;
+    newContent += `<div><button class="btn btn-warning" onClick=addBook() style='float:middle'>Add New Book</button></div></div>`;
+    document.getElementById("main-content").innerHTML = newContent;
+}
+
+function addBook() {
+    var title = document.getElementById("titleInput").value;
+    var webUrl = document.getElementById("webUrlInput").value;
+    var imageUrl = document.getElementById("imageUrlInput").value;
+    var newJSON = {'title': title, 'web_url': webUrl, 'image_url': imageUrl};
+    addBookInJSON(newJSON);
+}
+
+function addBookInJSON(newBook) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("PUT", `http://localhost:8080/book`, true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify(newBook));
+    document.getElementById("main-content").innerHTML = `<h1>New Book Added!</h1>`;
+}
