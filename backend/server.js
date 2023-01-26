@@ -42,7 +42,9 @@ app.put('/json_file', (req, res) => {
 //Update JSON file
 app.post('/json_file', (req, res) => {
     try {
-        const fileName = __dirname + '/' + req.query.name + '.json';
+        // Can we change the books.json to req.query.name + '.json'? Need to setup req.query.name in frontend.js
+        console.log(req.query)
+        const fileName = __dirname + '/' + 'books.json';
         let bodyData = req.body;
         fs.open(fileName, 'r', (err, fd) => {
             let books = JSON.parse(fs.readFileSync(fileName, 'utf8'));
@@ -157,6 +159,18 @@ app.delete('/book', (req, res) => {
 });
 
 const port = 8080
+
+// static Files (https://www.youtube.com/watch?v=A01KtJTv1oc)
+app.use(express.static(__dirname + '/frontend'))
+app.use('/css', express.static(__dirname + '/frontend/css'))
+app.use('/js', express.static(__dirname + '/frontend/js'))
+//app.use('/img', express.static(__dirname + '/frontend/img'))
+
+//__dirname + '/../frontend/home.html' doesn't work
+app.get('', (req, res) => {
+    res.sendFile(__dirname + '/frontend/home.html')
+})
+
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`)
 })
