@@ -42,7 +42,9 @@ app.put('/json_file', (req, res) => {
 //Update JSON file
 app.post('/json_file', (req, res) => {
     try {
-        const fileName = __dirname + '/' + req.query.name + '.json';
+        // Can we change the books.json to req.query.name + '.json'? Need to setup req.query.name in frontend.js
+        console.log(req.query)
+        const fileName = __dirname + '/' + 'books.json';
         let bodyData = req.body;
         fs.open(fileName, 'r', (err, fd) => {
             let books = JSON.parse(fs.readFileSync(fileName, 'utf8'));
