@@ -166,6 +166,7 @@ app.use('/css', express.static(__dirname + '/frontend/css'))
 app.use('/js', express.static(__dirname + '/frontend/js'))
 //app.use('/img', express.static(__dirname + '/frontend/img'))
 
+//__dirname + '/../frontend/home.html' doesn't work
 app.get('', (req, res) => {
     res.sendFile(__dirname + '/frontend/home.html')
 })
