@@ -22,7 +22,7 @@ async function scrapeGoodReads(url, res) {
         return await (await a.getProperty('href')).jsonValue();
     }));
     //console.log(hrefs);
-    hrefs.slice(0,10).forEach(async href => {
+    hrefs.slice(0,2).forEach(async href => {
         getBookInfo(href, hrefs.length/2, res);
     });
     browser.close();
