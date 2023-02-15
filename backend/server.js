@@ -1,8 +1,23 @@
 const fs = require('fs');
 var express = require('express');
+var mysql = require('mysql2');
+var config = require('./config')
 
 var app = express();
 app.use(express.json()); //JSON parser for post request
+
+// Connect to a mysql server
+var con = mysql.createConnection({
+    host: config.mysql.host,
+    user: config.mysql.user_name,
+    password: config.mysql.password,
+    database: config.mysql.database
+});
+
+con.connect(function(err) {
+    if (err) throw err;
+    console.log("Databse Connected!");
+});
 
 // Solve the security issue of sending API request through local browser
 app.use(function(req, res, next) {
@@ -12,95 +27,108 @@ app.use(function(req, res, next) {
     next();
 });
 
-var booksJsonFile = __dirname + '/books.json';
-
-// Get content from a JSON file
-app.get('/json_file', (req, res) => {
+// Get content from a table
+// Another function needs to be added is to check if the given table exsits
+// Otherwise a non exsiting table name will break the server
+app.get('/table', (req, res) => {
     try{
-        let data = fs.readFileSync(`${__dirname}/${req.query.name}.json`);
-        res.json(JSON.parse(data));
+        var sql="SELECT * FROM " + req.query.name;
+        con.query(sql, function(err, result) {
+            if (err) throw err;
+            console.log(result);
+            res.json(result);
+        });
     } catch (err) {
         res.send({'error': err.toString()});
     }
 });
 
-//Create JSON file
-app.put('/json_file', (req, res) => {
+// Create a new table with given content
+// Another function needs to be added is to check if the given table exsits
+// Otherwise an exsiting table name will break the server
+app.put('/table', (req, res) => {
     try{
-        const fileName = __dirname + '/' + req.query.name + '.json';
-        let bodyData = req.body;
-        fs.open(fileName, 'r', (err, fd) => {
-            fs.writeFile(fileName, JSON.stringify(bodyData), (err) => {
-                if(err){console.log(err)};});
-            })
-        res.send({'success': 'File sucessfully created.'})
-        } catch (err) {
-            res.send({'error': err.toString()});
-        }
-});
+        var sql="CREATE TABLE " + req.query.name +
+                " (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255)," +
+                " web_url VARCHAR(255), image_url VARCHAR(255))";
+        con.query(sql, function(err, result) {
+            if (err) throw err;
+        });
+        console.log("New table created");
 
-//Update JSON file
-app.post('/json_file', (req, res) => {
-    try {
-        // Can we change the books.json to req.query.name + '.json'? Need to setup req.query.name in frontend.js
-        console.log(req.query)
-        const fileName = __dirname + '/' + 'books.json';
-        let bodyData = req.body;
-        fs.open(fileName, 'r', (err, fd) => {
-            let books = JSON.parse(fs.readFileSync(fileName, 'utf8'));
-            bodyData.forEach(newBook => {
-                books.push(newBook);
-            })
-        fs.writeFileSync(fileName, JSON.stringify(books));
-        })
-        res.send({'success': 'File sucessfully updated.'});
-
+        var sql="INSERT INTO books SET ?";
+        for (let i=0; i<req.body.length; i++) {
+            con.query(sql, req.body[i], function(err, result) {
+                if (err) throw err;
+            });
+        };
+        console.log("Number of records inserted: " + req.body.length);
+        res.send({'success': 'Table sucessfully created.'})
     } catch (err) {
         res.send({'error': err.toString()});
     }
 });
 
-// Delete JSON file
-app.delete('/json_file', (req, res) => {
+//Update a table
+app.post('/table', (req, res) => {
     try {
-        fs.unlinkSync(__dirname + '/' + req.query.name + '.json');
-        res.send({'success': 'File deleted'})
+        var sql="INSERT INTO books SET ?";
+        for (let i=0; i<req.body.length; i++) {
+            con.query(sql, req.body[i], function(err, result) {
+                if (err) throw err;
+            });
+        };
+        console.log("Number of records inserted: " + req.body.length);
+        res.send({'success': 'Table sucessfully updated.'})
+    } catch (err) {
+        res.send({'error': err.toString()});
+    }
+});
 
+// Delete a table
+app.delete('/table', (req, res) => {
+    try {
+        var sql="DROP TABLE IF EXISTS " + req.query.name;
+        con.query(sql, function(err, result) {
+            if (err) throw err;
+            console.log(result);
+            res.send({'success': `Table '${req.query.name}' deleted`})
+        });
     } catch(err) {
         res.send({'error': err.toString()});
     }
 });
 
 // Get book details
-app.get('/book', (req, res) => {
+// Select all books with same given title first then return the first record
+// The duplication of title issue needs to be solved later
+// Ideally there are not books with same title
+app.get('/tbook', (req, res) => {
     try {
-        let books = JSON.parse(fs.readFileSync(booksJsonFile));
-        const titleName = req.query.title;
-        let responseBook = {};
-        books.forEach ((book, index) => {
-            if (book['title'] == titleName) {
-                responseBook = book
+        var sql="SELECT * FROM books WHERE title= ?";
+        con.query(sql, [req.query.title], function(err, result) {
+            if (err) throw err;
+            console.log(result);
+            if (result.length === 0) {
+                res.send({'error': `${req.query.title} is not found.`})
+            } else {
+                res.json(result[0]);
             }
-        })
-        if (Object.keys(responseBook).length === 0) {
-            res.send({'error': `${req.query.title} is not found.`})
-        } else {
-            res.json(responseBook);
-        }
+        });
     } catch (err) {
         res.send({'error': err.toString()});
     }
 });
 
-// Add new book
-app.put('/book', (req, res) => {
+// Add new book (only one)
+// Adding multiple books could use "Update a table"
+app.put('/tbook', (req, res) => {
     try {
-        let bookInfo = req.body;
-        fs.open(booksJsonFile, 'r', (err,fd) => {
-            let fileContent = JSON.parse(fs.readFileSync(booksJsonFile, 'utf8'));
-            fileContent.push(bookInfo);
-            fs.writeFileSync(booksJsonFile, JSON.stringify(fileContent));
+        var sql="INSERT INTO books SET ?";
+        con.query(sql, req.body, function(err, result) {
+            if (err) throw err;
         });
+        console.log("Number of records inserted: " + req.body.length);
         res.send({'success': 'Add book successfully.'})
     } catch (err) {
         res.send({'error': err.toSting()})
@@ -108,51 +136,34 @@ app.put('/book', (req, res) => {
 });
 
 // Update book detail
-app.post('/book', (req,res) => {
-    try {
-        let bookTitle = req.query.title;
-        let bodyData = req.body;
-        let found = false;
-        fs.open(booksJsonFile, 'r', (err, fd) => {
-            var books = JSON.parse(fs.readFileSync(booksJsonFile, 'utf8'));
-            books.forEach((book, index) => {
-                if (book['title']==bookTitle) {
-                    found = true;
-                    book['title'] = bodyData['title'];
-                    book['web_url'] = bodyData['web_url'];
-                    book['image_url'] = bodyData['image_url'];
-                }
-            })
-            if (found) {
-                fs.writeFileSync(booksJsonFile, JSON.stringify(books));
-                res.send({'success': `${bookTitle} is successfully updated.`})
-            } else {
-                res.send({'error': `${bookTitle} is not found.`})
-            }
-        })
+// book title checking fucntion needs to be added
+app.post('/tbook', (req,res) => {
+    try {    
+        var sql="UPDATE books SET title=?, web_url=?, image_url=? WHERE title= ?";
+        var condition = [ req.body['title'],
+                          req.body['web_url'],
+                          req.body['image_url'], 
+                          req.query.title];
+        con.query(sql, condition, function(err, result) {
+        if (err) throw err;
+        console.log(result.affectedRows + " record(s) updated");
+        res.send({'success': `${req.query.title} is successfully updated.`})
+    });
     } catch (err) {
         res.send({'error': err.toString()})
     }
 });
 
 // Delete book
-app.delete('/book', (req, res) => {
+// book title checking fucntion needs to be added
+app.delete('/tbook', (req, res) => {
     try {
-        let bookTitle = req.query.title;
-        let books = JSON.parse(fs.readFileSync(booksJsonFile, 'utf8'));
-        var bookIndex = -1;
-        books.forEach((book, index) => {
-            if (book['title']==bookTitle) {
-                bookIndex = index;
-            }
-        })
-        if (bookIndex>-1) {
-            books.splice(bookIndex, 1);
-            fs.writeFileSync(booksJsonFile, JSON.stringify(books));
-            res.send({'success': `${bookTitle} is successfully deleted.`})
-        } else {
-            res.send({'error': `${bookTitle} is not found.`})
-        }
+        var sql="DELETE FROM books WHERE title=" + mysql.escape(req.query.title);
+        con.query(sql, function(err, result) {
+        if (err) throw err;
+        console.log("Number of records deleted: " + result.affectedRows);
+        res.send({'success': `${req.query.title} is successfully deleted.`})
+    });
     } catch (err) {
         res.send({'error': err.toString()})
     }
