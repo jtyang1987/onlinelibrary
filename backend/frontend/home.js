@@ -5,7 +5,7 @@ function loadBooks() {
             displayData(this);
         };
     };
-    xhttp.open("GET", "http://localhost:8080/json_file?name=books", true);
+    xhttp.open("GET", "http://localhost:8080/table?name=books", true);
     xhttp.send();
 }
 
@@ -32,7 +32,7 @@ function getBookDetails(bookTitle) {
             displayBookDetail(bookTitle, this);
         }
     };
-    xhttp.open("GET", `http://localhost:8080/book?title=${bookTitle}`, true);
+    xhttp.open("GET", `http://localhost:8080/tbook?title=${bookTitle}`, true);
     xhttp.send();
 }
 
@@ -59,7 +59,7 @@ function updateBook(originalTitle) {
 
 function updateBookInJSON(originalTitle, newJSON) {
     let xhttp = new XMLHttpRequest();
-    xhttp.open("POST", `http://localhost:8080/book?title=${originalTitle}`, true);
+    xhttp.open("POST", `http://localhost:8080/tbook?title=${originalTitle}`, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify(newJSON));
     document.getElementById("main-content").innerHTML = `<h1>Book Updated!</h1>`;
@@ -73,7 +73,7 @@ function deleteBook(bookTitle) {
 
 function deleteBookInJSON(bookTitle) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("DELETE", `http://localhost:8080/book?title=${bookTitle}`, true);
+    xhttp.open("DELETE", `http://localhost:8080/tbook?title=${bookTitle}`, true);
     xhttp.send();
     document.getElementById("main-content").innerHTML = `<h1>"${bookTitle}" Deleted!</h1>`;
 }
@@ -96,7 +96,7 @@ function addBook() {
 
 function addBookInJSON(newBook) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("PUT", `http://localhost:8080/book`, true);
+    xhttp.open("PUT", `http://localhost:8080/tbook`, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify(newBook));
     document.getElementById("main-content").innerHTML = `<h1>New Book Added!</h1>`;

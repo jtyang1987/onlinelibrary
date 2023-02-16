@@ -18,3 +18,12 @@ Things to do:
 2. Replace the simple json file with the SQL database
 3. Add different user contol system
 4. Deploy to the AWS
+
+
+2.15.2023
+* 8 basic api are switched from json file to mysql db
+1. The table name checking
+2. book title duplication issue
+3. book title checking
+
+4. Javascript how to define function/ how to import module

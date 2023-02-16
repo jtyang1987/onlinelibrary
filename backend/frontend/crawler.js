@@ -44,7 +44,7 @@ function addAllBooks() {
     const crawlerURL = 'http://localhost:8080';
     var xhttp = new XMLHttpRequest();
     // This doesn't work if POST /json_file function setup with req.query.name instead of books.json. How to setup req.query.name here?
-    xhttp.open("POST", `${crawlerURL}/json_file`, true);
+    xhttp.open("POST", `${crawlerURL}/table`, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify(books));
     document.getElementById("main-content").innerHTML = `<h1>Added Another ${books.length} Books!</h1>`;
