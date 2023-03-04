@@ -1,3 +1,19 @@
+Question for the new MVC platform 3.5
+
+1. git clone repo, what does this repo have
+2. npm -install base on which file, install what packages
+3. controller/model/routes
+4. npm run dev  ->  nodemon server.js
+5. mysql vs mysql2 promise() wrapper.     promise() and await 38:30 41:00
+6. express.Router()
+7. Post.js create a class and save() function??
+8. next() in the server.js
+9. MVC: no view?
+10. Rename post to book doesn't work
+11. how to use nodemon
+12. download from one repo, upload to another repo?
+
+
 # onlinelibrary
 A hands on full stack project using javascript, html, css, react API, node.js.
 
