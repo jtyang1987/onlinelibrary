@@ -32,5 +32,6 @@ app.get('', (req, res) => {
 })
 
 // Listen on pc port
+const HOST = process.env.HOST;
 const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`Server listening at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server listening at http://${HOST}:${PORT}`));

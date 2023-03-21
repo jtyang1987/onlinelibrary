@@ -1,4 +1,5 @@
 var books = [];
+const HOST = 'localhost';
 
 function parseBooks() {
     var defaultURL = "https://www.goodreads.com/search?q=programming";
@@ -41,7 +42,7 @@ function displayBooks(xhttp) {
 };
 
 function addAllBooks() {
-    const crawlerURL = 'http://localhost:3000';
+    const crawlerURL = `http://${HOST}:3000`;
     var xhttp = new XMLHttpRequest();
     // This doesn't work if POST /json_file function setup with req.query.name instead of books.json. How to setup req.query.name here?
     xhttp.open("PUT", `${crawlerURL}/books/`, true);
