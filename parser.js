@@ -1,3 +1,6 @@
+require("dotenv").config();
+
+const HOST = process.env.HOST;
 
 const puppeteer = require('puppeteer');
 var express = require('express');
@@ -67,5 +70,5 @@ app.get('/crawler', (req, res) => {
 
 const port = 8081;
 app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`)
+    console.log(`Server listening at http://${HOST}:${port}`)
 })

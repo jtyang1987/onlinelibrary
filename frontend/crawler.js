@@ -21,7 +21,7 @@ function parseURL() {
             displayBooks(this);
         }
     };
-    xhttp.open("GET", `http://localhost:8081/crawler?url=${url}`, true);
+    xhttp.open("GET", `http://${HOST}:8081/crawler?url=${url}`, true);
     xhttp.send();
 };
 
