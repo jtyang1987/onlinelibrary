@@ -1,0 +1,22 @@
+{
+  "name": "onlinelibrary",
+  "version": "2.0.0",
+  "description": "onlinelibrary using MVC platform",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mysql2": "^3.2.0",
+    "puppeteer": "^19.7.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
